@@ -36,11 +36,15 @@ export async function POST(req: Request) {
 			console.log(`Ignoring bot message`);
 		} else {
 			const token = `slack-message-webhook:${channel}:${thread_ts}`;
-			const hook = await slackMessageHook.resume(token, parsedBody.data.event);
-			if (hook) {
-				console.log(`Hook resumed for token: ${token} (${hook.runId})`);
-			} else {
-				console.log(`No hook found for token: ${token}`);
+			try {
+				const hook = await slackMessageHook.resume(token, parsedBody.data.event);
+				if (hook) {
+					console.log(`Hook resumed for token: ${token} (${hook.runId})`);
+				} else {
+					console.log(`No hook found for token: ${token}`);
+				}
+			} catch (error) {
+				console.log(`Failed to resume hook for token: ${token}`, error);
 			}
 		}
 	}
