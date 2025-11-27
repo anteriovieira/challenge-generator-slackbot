@@ -35,6 +35,9 @@ export async function generateChallengePiece(
             schema: ChallengePieceSchema,
         }),
         experimental_telemetry: { isEnabled: true },
+        headers: {
+            'Authorization': `Bearer ${process.env.AI_GATEWAY_API_KEY}`,
+        },
     });
     console.timeEnd(timerLabel);
 
