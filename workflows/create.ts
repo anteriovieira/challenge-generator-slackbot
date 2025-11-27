@@ -52,7 +52,7 @@ export async function createChallenge(slashCommand: URLSearchParams) {
 		// Create the initial top-level message in the channel with a placeholder
 		postSlackMessage({
 			channel: channelId,
-			text: `${introText}\n\n> _Thinking…_ :thinking-hard:`,
+			text: `${introText}\n\n> _Thinking…_ :thinking_face:`,
 		}),
 		// Ask the LLM to initiate the challenge creation
 		generateChallengePiece(messages, model),
@@ -100,7 +100,7 @@ export async function createChallenge(slashCommand: URLSearchParams) {
 			addReactionToMessage({
 				channel: channelId,
 				timestamp: data.ts,
-				name: "thinking-hard",
+				name: "thinking_face",
 			}),
 		]);
 
@@ -118,7 +118,7 @@ export async function createChallenge(slashCommand: URLSearchParams) {
 			removeReactionFromMessage({
 				channel: channelId,
 				timestamp: data.ts,
-				name: "thinking-hard",
+				name: "thinking_face",
 			}),
 		]);
 
@@ -140,7 +140,7 @@ export async function createChallenge(slashCommand: URLSearchParams) {
 	const [{ ts: finalTs }, fileId] = await Promise.all([
 		postSlackMessage({
 			channel: channelId,
-			text: `${finalText}\n\n_Generating challenge image…_ :thinking-hard:`,
+			text: `${finalText}\n\n_Generating challenge image…_ :thinking_face:`,
 			thread_ts: ts,
 			reply_broadcast: true,
 		}),
