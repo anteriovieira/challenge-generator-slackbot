@@ -1,7 +1,11 @@
-import { gateway, generateText } from "ai";
+import { createGateway, generateText } from "ai";
 import { FatalError } from "workflow";
 import { IMAGE_GEN_PROMPT } from "@/lib/prompt";
 import { slack } from "@/lib/slack";
+
+const gateway = createGateway({
+    apiKey: process.env.AI_GATEWAY_API_KEY ?? '',
+});
 
 export async function generateChallengeImage(
     channelId: string,
