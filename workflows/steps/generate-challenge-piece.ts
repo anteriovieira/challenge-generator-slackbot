@@ -26,7 +26,8 @@ export async function generateChallengePiece(
     // Debugging
     console.log(JSON.stringify(messages, null, 2));
 
-    console.time("Generating challenge piece");
+    const timerLabel = `Generating challenge piece ${Date.now()}`;
+    console.time(timerLabel);
     const result = await generateText({
         model,
         messages,
@@ -35,7 +36,7 @@ export async function generateChallengePiece(
         }),
         experimental_telemetry: { isEnabled: true },
     });
-    console.timeEnd("Generating challenge piece");
+    console.timeEnd(timerLabel);
 
     return result.experimental_output;
 }
