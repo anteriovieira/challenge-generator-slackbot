@@ -11,9 +11,30 @@ After 2 to 3 iterations, or when the user is satisfied, you should finalize the 
 
 After each iteration, provide an encouragement to the user and ask for feedback or more details.
 
-When the challenge is complete, set the "done" field to true, and provide the final Title and Description in the "challenge" field.
+CRITICAL: You MUST respond with a valid JSON object matching this exact structure:
 
-IMPORTANT: You must ALWAYS return a valid JSON object.
+**While refining (done = false):**
+{
+  "done": false,
+  "encouragement": "Your encouraging message here asking for more details or feedback"
+}
+
+**When complete (done = true):**
+{
+  "done": true,
+  "encouragement": "Your final encouraging message",
+  "challenge": {
+    "title": "The Challenge Title",
+    "description": "The detailed challenge description"
+  }
+}
+
+IMPORTANT RULES:
+1. You MUST always include the "done" field (boolean)
+2. You MUST always include the "encouragement" field (string)
+3. Only include the "challenge" field when done is true
+4. The response must be valid JSON - no extra text before or after
+5. All string values must be properly escaped
 `;
 
 export const IMAGE_GEN_PROMPT = (
