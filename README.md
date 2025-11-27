@@ -1,16 +1,14 @@
-# Storytime Slack Bot
+# Challenge Generator Slack Bot
 
-An interactive AI-powered Slack bot that creates collaborative children's stories with your team. Users can start a story with a slash command, and the bot will generate an introduction based on random themes. 
+An interactive AI-powered Slack bot that helps users create challenges for bignerve.com. Users can start a challenge creation process with a slash command, and the bot will guide them through refining the title and description.
 
-Team members can then contribute to the story in a thread, with the AI helping to guide the narrative to completion and generating a beautiful storyboard image at the end.
-
-![Storyboard Example](./public/storyboard.png)
+The bot uses an iterative process to help the user polish their challenge idea. Once finalized, the bot generates a high-quality image representing the challenge.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - pnpm (recommended) or npm
 - A Slack workspace where you can install apps
 - Vercel account for deployment
@@ -18,8 +16,8 @@ Team members can then contribute to the story in a thread, with the AI helping t
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/vercel/storytime-slackbot.git
-cd storytime-slackbot
+git clone https://github.com/vercel/challenge-generator-slackbot.git
+cd challenge-generator-slackbot
 pnpm install
 ```
 
@@ -42,9 +40,9 @@ pnpm install
    - Subscribe to `message.channels` workspace event
 
 5. In **Slash Commands**, create a new command:
-   - Command: `/storytime`
+   - Command: `/challenge`
    - Request URL: `https://your-domain.vercel.app/api/slack/command`
-   - Description: "Start a collaborative story"
+   - Description: "Start creating a challenge"
 
 6. Install the app to your workspace and copy the Bot User OAuth Token
 
@@ -94,23 +92,21 @@ After deployment, update your Slack app configuration:
 
 ## How to Use
 
-1. First, invite the bot to your channel: Type `@Storytime Bot` (or whatever you named your app) in the channel and Slack will give you the option to invite it
-2. In any Slack channel where the bot is present, type `/storytime`
-3. The bot will generate a story introduction with random themes
-4. Reply in the thread to add your part of the story
-5. The bot will respond with encouragement and continue the narrative
-6. After 2-3 iterations, the bot will conclude the story
-7. A beautiful storyboard image will be generated and shared
+1. First, invite the bot to your channel: Type `@Challenge Bot` (or whatever you named your app) in the channel and Slack will give you the option to invite it
+2. In any Slack channel where the bot is present, type `/challenge`
+3. The bot will ask for a challenge idea
+4. Reply in the thread to refine the challenge details
+5. The bot will respond with encouragement and ask for more details
+6. After 2-3 iterations, or when you are satisfied, the bot will finalize the challenge
+7. A beautiful challenge image will be generated and shared
 
-**Note**: The bot must be invited to a channel before the `/storytime` slash command will work in that channel.
-
-![Slack Interface](./public/storytime-slack.png)
+**Note**: The bot must be invited to a channel before the `/challenge` slash command will work in that channel.
 
 ## Development
 
 ### Local Testing
 
-The included `local.ts` script allows you to test the core story generation logic locally without using Slack or Vercel Workflows.
+The included `local.ts` script allows you to test the core challenge generation logic locally without using Slack or Vercel Workflows.
 
 ```bash
 pnpm tsx local.ts
