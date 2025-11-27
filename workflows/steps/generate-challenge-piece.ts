@@ -1,9 +1,5 @@
-import { createGateway, generateText, type ModelMessage, Output } from "ai";
+import { generateText, type ModelMessage, Output } from "ai";
 import { z } from "zod";
-
-const gateway = createGateway({
-    apiKey: process.env.AI_GATEWAY_API_KEY ?? '',
-});
 
 const ChallengePieceSchema = z.object({
     done: z.boolean().describe("Whether the challenge creation is complete"),
@@ -33,7 +29,7 @@ export async function generateChallengePiece(
     const timerLabel = `Generating challenge piece ${Date.now()}`;
     console.time(timerLabel);
     const result = await generateText({
-        model: gateway(model),
+        model,
         messages,
         experimental_output: Output.object({
             schema: ChallengePieceSchema,
