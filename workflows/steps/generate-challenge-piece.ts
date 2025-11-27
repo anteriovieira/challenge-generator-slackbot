@@ -1,5 +1,9 @@
-import { gateway, generateText, type ModelMessage, Output } from "ai";
+import { createGateway, generateText, type ModelMessage, Output } from "ai";
 import { z } from "zod";
+
+const gateway = createGateway({
+    apiKey: process.env.AI_GATEWAY_API_KEY ?? '',
+});
 
 const ChallengePieceSchema = z.object({
     done: z.boolean().describe("Whether the challenge creation is complete"),
