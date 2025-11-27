@@ -1,4 +1,4 @@
-import { generateText } from "ai";
+import { gateway, generateText } from "ai";
 import { FatalError } from "workflow";
 import { IMAGE_GEN_PROMPT } from "@/lib/prompt";
 import { slack } from "@/lib/slack";
@@ -13,7 +13,7 @@ export async function generateChallengeImage(
     console.time("Generating challenge image");
     const result = await generateText({
         //model: "google/gemini-2.5-flash-image-preview",
-        model: "google/gemini-3-pro-image",
+        model: gateway("google/gemini-3-pro-image"),
         prompt: IMAGE_GEN_PROMPT(challenge),
     });
     console.timeEnd("Generating challenge image");
