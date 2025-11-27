@@ -5,36 +5,41 @@ import readline from "node:readline/promises";
 import { generateText, type ModelMessage, Output } from "ai";
 import { z } from "zod";
 import terminalImage from "terminal-image";
-import { SYSTEM_PROMPT, THEMES, IMAGE_GEN_PROMPT } from "./lib/prompt.ts";
+import { SYSTEM_PROMPT, IMAGE_GEN_PROMPT } from "./lib/prompt.ts";
 
 const rl = readline.createInterface({
 	input: process.stdin,
 	output: process.stdout,
 });
 
-const theme = THEMES[Math.floor(Math.random() * THEMES.length)];
-const theme2 = THEMES[Math.floor(Math.random() * THEMES.length)];
-console.log(`Theme: ${theme}`);
-console.log(`Theme2: ${theme2}`);
-
 const messages: ModelMessage[] = [
 	{
 		role: "system",
-		content: SYSTEM_PROMPT(theme, theme2),
+		content: SYSTEM_PROMPT(),
 	},
 	{
 		role: "user",
-		content: "Let's start a new story.",
+		content: "Let's start creating a challenge.",
 	},
 ];
 
-const StorytimeSchema = z.object({
-	done: z.boolean(),
-	encouragement: z.string(),
-	story: z.string(),
+const ChallengePieceSchema = z.object({
+	done: z.boolean().describe("Whether the challenge creation is complete"),
+	encouragement: z
+		.string()
+		.describe("An encouragement to the user to continue refining the challenge"),
+	challenge: z
+		.object({
+			title: z.string().describe("The title of the challenge"),
+			description: z.string().describe("The description of the challenge"),
+		})
+		.optional()
+		.describe(
+			"The final challenge details (if the challenge creation is complete)",
+		),
 });
 
-let finalStory = "";
+let finalChallenge: { title: string; description: string } | undefined;
 
 while (true) {
 	const result = await generateText({
@@ -44,7 +49,7 @@ while (true) {
 		model: "meta/llama-4-scout",
 		messages,
 		experimental_output: Output.object({
-			schema: StorytimeSchema,
+			schema: ChallengePieceSchema,
 		}),
 	});
 	console.log(result.experimental_output);
@@ -54,14 +59,17 @@ while (true) {
 		content: result.text,
 	});
 
-	if (result.experimental_output?.done) {
-		finalStory = result.experimental_output.story;
+	if (
+		result.experimental_output?.done &&
+		result.experimental_output?.challenge
+	) {
+		finalChallenge = result.experimental_output.challenge;
 		break;
 	}
 
 	// read user input
 	console.log("");
-	const userInput = await rl.question("Enter your story piece: ");
+	const userInput = await rl.question("Enter your feedback: ");
 
 	messages.push({
 		role: "user",
@@ -71,13 +79,19 @@ while (true) {
 
 rl.close();
 
+if (!finalChallenge) {
+	console.error("Failed to generate challenge");
+	process.exit(1);
+}
+
 console.log("");
-console.log("Here is the final story:");
-console.log(finalStory);
+console.log("Here is the final challenge:");
+console.log(finalChallenge.title);
+console.log(finalChallenge.description);
 
 const result = await generateText({
 	model: "google/gemini-2.5-flash-image-preview",
-	prompt: IMAGE_GEN_PROMPT(finalStory),
+	prompt: IMAGE_GEN_PROMPT(finalChallenge),
 });
 
 console.log(await terminalImage.buffer(result.files[0].uint8Array));

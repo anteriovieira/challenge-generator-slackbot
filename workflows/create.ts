@@ -1,15 +1,15 @@
 import type { ModelMessage } from "ai";
 import { defineHook, FatalError } from "workflow";
-import { SYSTEM_PROMPT, THEMES } from "../lib/prompt";
+import { SYSTEM_PROMPT } from "../lib/prompt";
 
 // Look ma no queues or kv!
 
 // Steps
-import { generateStoryPiece } from "./steps/generate-story-piece";
+import { generateChallengePiece } from "./steps/generate-challenge-piece";
 import {
-	broadcastStoryboardImage,
-	generateStoryboardImage,
-} from "./steps/generate-storyboard-image";
+	broadcastChallengeImage,
+	generateChallengeImage,
+} from "./steps/generate-challenge-image";
 import {
 	addReactionToMessage,
 	postSlackMessage,
@@ -22,7 +22,7 @@ export const slackMessageHook = defineHook<{
 	ts: string;
 }>();
 
-export async function storytime(slashCommand: URLSearchParams) {
+export async function createChallenge(slashCommand: URLSearchParams) {
 	"use workflow";
 
 	// Initialize the workflow
@@ -31,34 +31,31 @@ export async function storytime(slashCommand: URLSearchParams) {
 		throw new FatalError("`channel_id` is required");
 	}
 
-	const theme = THEMES[Math.floor(Math.random() * THEMES.length)];
-	const theme2 = THEMES[Math.floor(Math.random() * THEMES.length)];
 	const model = "meta/llama-4-scout";
-	console.log({ theme, theme2, model });
 
 	// ...including local state like the entire message history
-	let finalStory = "";
+	let finalChallenge: { title: string; description: string } | undefined;
 	const messages: ModelMessage[] = [
 		{
 			role: "system",
-			content: SYSTEM_PROMPT(theme, theme2),
+			content: SYSTEM_PROMPT(),
 		},
 		{
 			role: "user",
-			content: "Let's start a new story.",
+			content: "Let's start creating a challenge.",
 		},
 	];
 
-	const introText = `It's storytime! I'll start the story and you continue it.`;
+	const introText = `Let's create a challenge for bignerve.com! I'll help you refine your idea.`;
 
 	const [{ ts, message }, aiResponse] = await Promise.all([
 		// Create the initial top-level message in the channel with a placeholder
 		postSlackMessage({
 			channel: channelId,
-			text: `${introText}\n\n> _Generating introduction…_ :thinking-hard:`,
+			text: `${introText}\n\n> _Thinking…_ :thinking-hard:`,
 		}),
-		// Ask the LLM to initiate the story
-		generateStoryPiece(messages, model),
+		// Ask the LLM to initiate the challenge creation
+		generateChallengePiece(messages, model),
 	]);
 
 	const botId = message?.user;
@@ -69,12 +66,12 @@ export async function storytime(slashCommand: URLSearchParams) {
 	await updateSlackMessage({
 		channel: channelId,
 		ts,
-		text: `${introText}\n\n> _${aiResponse.story}_`,
+		text: `${introText}\n\n> _${aiResponse.encouragement}_`,
 	});
 
 	messages.push({
 		role: "assistant",
-		content: aiResponse.story,
+		content: aiResponse.encouragement,
 	});
 
 	// Subscribe to new messages in the thread
@@ -90,16 +87,16 @@ export async function storytime(slashCommand: URLSearchParams) {
 	});
 
 	// Process user messages in the thread (via the webhook) in
-	// a loop until the LLM decides that the story is complete
+	// a loop until the LLM decides that the challenge is complete
 	for await (const data of slackMessageEvent) {
 		messages.push({
 			role: "user",
 			content: data.text,
 		});
 
-		// Submit user's message to the LLM to continue the story
+		// Submit user's message to the LLM to continue the challenge creation
 		const [aiResponse] = await Promise.all([
-			generateStoryPiece(messages, model),
+			generateChallengePiece(messages, model),
 			addReactionToMessage({
 				channel: channelId,
 				timestamp: data.ts,
@@ -109,7 +106,7 @@ export async function storytime(slashCommand: URLSearchParams) {
 
 		messages.push({
 			role: "assistant",
-			content: aiResponse.story,
+			content: aiResponse.encouragement,
 		});
 
 		await Promise.all([
@@ -125,37 +122,38 @@ export async function storytime(slashCommand: URLSearchParams) {
 			}),
 		]);
 
-		// If the LLM has decided that the story is complete, break the loop.
+		// If the LLM has decided that the challenge is complete, break the loop.
 		// No more user messages will be processed in the thread after this.
-		if (aiResponse.done) {
-			finalStory = aiResponse.story;
+		if (aiResponse.done && aiResponse.challenge) {
+			finalChallenge = aiResponse.challenge;
 			break;
 		}
 	}
 
-	const finalText = `*Here is the final story:*\n\n${finalStory
-		.split("\n")
-		.map((line) => `> ${line ? `_${line}_` : ""}`)
-		.join("\n")}`;
+	if (!finalChallenge) {
+		throw new FatalError("Failed to generate challenge");
+	}
 
-	// Post the final story and generate the storyboard image
+	const finalText = `*Here is the final challenge:*\n\n*${finalChallenge.title}*\n${finalChallenge.description}`;
+
+	// Post the final challenge and generate the challenge image
 	const [{ ts: finalTs }, fileId] = await Promise.all([
 		postSlackMessage({
 			channel: channelId,
-			text: `${finalText}\n\n_Generating storyboard image…_ :thinking-hard:`,
+			text: `${finalText}\n\n_Generating challenge image…_ :thinking-hard:`,
 			thread_ts: ts,
 			reply_broadcast: true,
 		}),
-		generateStoryboardImage(channelId, ts, finalStory),
+		generateChallengeImage(channelId, ts, finalChallenge),
 	]);
 
-	// Update the final story message to remove the "generating storyboard image" message
+	// Update the final challenge message to remove the "generating challenge image" message
 	await updateSlackMessage({
 		channel: channelId,
 		ts: finalTs,
 		text: finalText,
 	});
 
-	// Broadcast the storyboard image to the thread
-	await broadcastStoryboardImage(channelId, ts, fileId);
+	// Broadcast the challenge image to the thread
+	await broadcastChallengeImage(channelId, ts, fileId);
 }

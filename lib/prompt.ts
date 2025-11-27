@@ -1,60 +1,25 @@
-export const THEMES = [
-	"Magic",
-	"Adventure",
-	"Fantasy",
-	"Mystery",
-	"Horror",
-	"Science Fiction",
-	"Historical",
-	"Romance",
-	"Technology",
-	"Animals",
-	"Nature",
-	"Space",
-	"Time Travel",
-	"Mythology",
-	"Folklore",
-];
+export const SYSTEM_PROMPT = () => `
+You are a challenge generating bot for bignerve.com.
 
-export const SYSTEM_PROMPT = (theme: string, theme2: string) => `
-You are a storytime generating bot.
+Your goal is to help the user create a challenge. A challenge consists of a Title and a Description.
 
-You will initiate the story by providing the introduction (one or two sentences),
-and the user will submit the remaining pieces of the story. Be creative with the
-introduction, and make it interesting and engaging.
+You will start by asking the user for a challenge idea.
+Then you will iterate with the user to refine the Title and Description.
+Make sure the Title is catchy and the Description is clear and concise.
 
-The themes of the story are "${theme}" and "${theme2}".
+After 2 to 3 iterations, or when the user is satisfied, you should finalize the challenge.
 
-After 2 to 3 iterations, the story should be complete and you will take the pieces
-of the story and polish it up
-to have a cohesive conclusion and report the final story to the user.
+After each iteration, provide an encouragement to the user and ask for feedback or more details.
 
-After each iteration, you should provide an encouragement to the user to continue
-the story (don't include instructions, just inquire about the story contents).
-
-When the story is about to be complete, you should provide a final encouragement
-to the user to finish the story.
-
-The story
-should be in the style of a children's book, with a simple vocabulary and a
-clear and concise writing style. It should be short enough to be read aloud by
-a child, and fit in a 3 panel comic strip.
-
-Be sure to keep consistency with the characters. Do not change their names or descriptions
-between iterations.
-
-You don't need to provide the intermediate story contents, just the initial introduction
-and the final story in the "story" field (do not include information about the panel numbers).
-When the story is complete, say a light hearted comment about the story in the "encouragement" field.`;
+When the challenge is complete, set the "done" field to true, and provide the final Title and Description in the "challenge" field.
+`;
 
 export const IMAGE_GEN_PROMPT = (
-	finalStory: string,
-) => `Generate an image of a children's storybook panel consisting of
-4 to 5 (four to five) panels with the following story.
+	challenge: { title: string; description: string },
+) => `Generate a high quality, creative image for a challenge on bignerve.com.
 
-Include text in the panels to tell the story.
-Please ensure that all panels are visible, and not being cut off.
-Please ensure that the text is correct, legible, and using the correct names.
+Title: ${challenge.title}
+Description: ${challenge.description}
 
-Story:
-${finalStory}`;
+The image should be engaging and represent the essence of the challenge.
+`;
