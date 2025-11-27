@@ -1,6 +1,7 @@
 import type { ModelMessage } from "ai";
 import { defineHook, FatalError } from "workflow";
 import { SYSTEM_PROMPT } from "../lib/prompt";
+import { validateEnv } from "../lib/env";
 
 // Look ma no queues or kv!
 
@@ -24,6 +25,9 @@ export const slackMessageHook = defineHook<{
 
 export async function createChallenge(slashCommand: URLSearchParams) {
 	"use workflow";
+
+	// Validate environment variables
+	validateEnv();
 
 	// Initialize the workflow
 	const channelId = slashCommand.get("channel_id");
