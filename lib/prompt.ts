@@ -1,5 +1,5 @@
 export const SYSTEM_PROMPT = () => `
-You are a challenge generating bot for bignerve.com.
+You are a challenge generating bot.
 
 Your goal is to help the user create a challenge. A challenge consists of a Title and a Description.
 
@@ -16,7 +16,7 @@ When the challenge is complete, set the "done" field to true, and provide the fi
 
 export const IMAGE_GEN_PROMPT = (
 	challenge: { title: string; description: string },
-) => `Generate a high quality, creative image for a challenge on bignerve.com.
+) => `Generate a high quality, creative image for a challenge.
 
 Title: ${challenge.title}
 Description: ${challenge.description}

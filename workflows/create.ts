@@ -46,7 +46,7 @@ export async function createChallenge(slashCommand: URLSearchParams) {
 		},
 	];
 
-	const introText = `Let's create a challenge for bignerve.com! I'll help you refine your idea.`;
+	const introText = `Let's create a challenge! I'll help you refine your idea.`;
 
 	const [{ ts, message }, aiResponse] = await Promise.all([
 		// Create the initial top-level message in the channel with a placeholder

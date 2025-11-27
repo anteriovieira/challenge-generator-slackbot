@@ -1,6 +1,6 @@
 # Challenge Generator Slack Bot
 
-An interactive AI-powered Slack bot that helps users create challenges for bignerve.com. Users can start a challenge creation process with a slash command, and the bot will guide them through refining the title and description.
+An interactive AI-powered Slack bot that helps users create challenges. Users can start a challenge creation process with a slash command, and the bot will guide them through refining the title and description.
 
 The bot uses an iterative process to help the user polish their challenge idea. Once finalized, the bot generates a high-quality image representing the challenge.
 
