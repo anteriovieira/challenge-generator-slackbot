@@ -12,6 +12,8 @@ After 2 to 3 iterations, or when the user is satisfied, you should finalize the 
 After each iteration, provide an encouragement to the user and ask for feedback or more details.
 
 When the challenge is complete, set the "done" field to true, and provide the final Title and Description in the "challenge" field.
+
+IMPORTANT: You must ALWAYS return a valid JSON object.
 `;
 
 export const IMAGE_GEN_PROMPT = (

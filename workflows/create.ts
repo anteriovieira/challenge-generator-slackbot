@@ -31,7 +31,7 @@ export async function createChallenge(slashCommand: URLSearchParams) {
 		throw new FatalError("`channel_id` is required");
 	}
 
-	const model = "meta/llama-4-scout";
+	const model = "google/gemini-1.5-pro";
 
 	// ...including local state like the entire message history
 	let finalChallenge: { title: string; description: string } | undefined;
