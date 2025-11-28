@@ -38,6 +38,9 @@ export async function createChallenge(slashCommand: URLSearchParams) {
 		throw new FatalError("`channel_id` is required");
 	}
 
+	// Get the initial text from the slash command (e.g., "/challenge about ai and the users")
+	const initialText = slashCommand.get("text")?.trim();
+
 	const model = "meta/llama-4-scout";
 
 	// ...including local state like the entire message history
@@ -47,13 +50,22 @@ export async function createChallenge(slashCommand: URLSearchParams) {
 			role: "system",
 			content: SYSTEM_PROMPT(),
 		},
-		{
-			role: "user",
-			content: "Let's start creating a challenge.",
-		},
 	];
 
-	const introText = `Let's create a challenge!\n\n I'll help you refine your idea.`;
+	// If the user provided initial text, use it; otherwise, use a generic starter
+	if (initialText) {
+		messages.push({
+			role: "user",
+			content: `I want to create a challenge ${initialText}`,
+		});
+	} else {
+		messages.push({
+			role: "user",
+			content: "Let's start creating a challenge.",
+		});
+	}
+
+	const introText = `Let's create a challenge!\n\nI'll help you refine your idea.`;
 
 	const [{ ts, message }, aiResponse] = await Promise.all([
 		// Create the initial top-level message in the channel with a placeholder
