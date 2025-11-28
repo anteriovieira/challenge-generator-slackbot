@@ -29,6 +29,9 @@ export async function createChallenge(slashCommand: URLSearchParams) {
 	// Validate environment variables
 	validateEnv();
 
+	// log the input
+	console.log("Input:", slashCommand);
+
 	// Initialize the workflow
 	const channelId = slashCommand.get("channel_id");
 	if (!channelId) {
@@ -67,11 +70,11 @@ export async function createChallenge(slashCommand: URLSearchParams) {
 		throw new FatalError("Failed to get bot ID");
 	}
 
-	await updateSlackMessage({
-		channel: channelId,
-		ts,
-		text: `${introText}\n\n> _${aiResponse.encouragement}_`,
-	});
+	// await updateSlackMessage({
+	// 	channel: channelId,
+	// 	ts,
+	// 	text: `${introText}\n\n> _${aiResponse.encouragement}_`,
+	// });
 
 	messages.push({
 		role: "assistant",
